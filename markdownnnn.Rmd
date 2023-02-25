@@ -1,0 +1,146 @@
+---
+title: "proje_rak"
+author: "Rafet Ali Kaba"
+date: "2023-02-24"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+## PROJECT
+
+In this project, we will analysis whether the game makers earned more than the games they released for ps4 or ps3.
+
+## MY CODES
+
+I insatalled my libraries first
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
+```
+
+I import my dataset and examine it and make it more organized and editable
+
+```{r}
+oyunlar<-read.csv("game.csv")
+oyunlar$total_sales<-gsub("N/A","",oyunlar$total_sales)
+oyunlar$total_sales<-str_replace(oyunlar$total_sales,"m","")
+oyunlar$total_sales<-str_replace(oyunlar$total_sales,".","")
+oyunlar$total_sales<-as.numeric(oyunlar$total_sales,na.rm=TRUE)
+toplam_total_sales<-sum(oyunlar$total_sales,na.rm=TRUE)
+```
+
+Then i separate the platform
+
+```{r}
+ps4<- oyunlar%>%
+  filter(platform=="PS4")
+
+ps3<- oyunlar%>%
+  filter(platform=="PS3")
+```
+
+Then I find the total earnings of the publishers from the platform and turn them into a data frame.
+
+```{r}
+eagames<-oyunlar%>%
+  filter(publisher=="Electronic Arts")%>%
+  filter(platform=="PS4")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+rockstar<- oyunlar%>%
+  filter(publisher=="Rockstar Games")%>%
+  filter(platform=="PS4")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+activision<- oyunlar%>%
+  filter(publisher=="Activision")%>%
+  filter(platform=="PS4")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+sony<- oyunlar%>%
+  filter(publisher=="Sony Interactive Entertainment")%>%
+  filter(platform=="PS4")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+ubisoft<- oyunlar%>%
+  filter(publisher=="Ubisoft")%>%
+  filter(platform=="PS4")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+
+eagames2<-oyunlar%>%
+  filter(publisher=="Electronic Arts")%>%
+  filter(platform=="PS3")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+rockstar2<- oyunlar%>%
+  filter(publisher=="Rockstar Games")%>%
+  filter(platform=="PS3")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+activision2<- oyunlar%>%
+  filter(publisher=="Activision")%>%
+  filter(platform=="PS3")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+sony2<- oyunlar%>%
+  filter(publisher=="Sony Interactive Entertainment")%>%
+  filter(platform=="PS3")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+ubisoft2<- oyunlar%>%
+  filter(publisher=="Ubisoft")%>%
+  filter(platform=="PS3")%>%
+  summarise(toplamsatis=sum(total_sales,na.rm=TRUE))
+
+toplam2<-data.frame(eagames2,rockstar2,activision2,sony2,ubisoft2)
+rownames(toplam2)<-"PS3"
+colnames(toplam2)<-c("EA","Rock Star","Activision","Sony","Ubisoft")
+```
+
+```{r}
+toplamsatislar<-data.frame(eagames,rockstar,activision,sony,ubisoft)
+rownames(toplamsatislar)<-"PS4"
+colnames(toplamsatislar)<-c("EA","Rock Star","Activision","Sony","Ubisoft")
+
+toplam2<-data.frame(eagames2,rockstar2,activision2,sony2,ubisoft2)
+rownames(toplam2)<-"PS3"
+colnames(toplam2)<-c("EA","Rock Star","Activision","Sony","Ubisoft")
+
+toplamsatislar<-rbind(toplamsatislar,toplam2)
+
+toplam1<-t(toplamsatislar)
+toplam1<-data.frame(toplam1)
+
+```
+
+and finally I visualize this total sales data.
+
+```{r}
+graph1<-ggplot(toplam1, aes(x=toplam1[,1],y=row.names(toplam1)))
+  
+graph1<-graph1+labs(x="Total Sales",y="Game Companies",title="PS 4")+geom_point(color="blue",size=7,shape=16)
+
+graph2<-ggplot(toplam1, aes(x=toplam1[,2],y=row.names(toplam1)))
+  
+graph2<-graph2+labs(x="Total Sales",y="Game Companies",title="PS 3")+geom_point(color="green",size=7,shape=16)
+```
+
+```{r}
+graph1
+```
+
+```{r}
+graph2
+```
+
+
+
+
+
